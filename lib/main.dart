@@ -1,41 +1,25 @@
 import 'package:flutter/material.dart';
+import 'desc.dart';
+import 'outcome.dart';
+import 'yesnobutton.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'How are you',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'How Are You'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   final String title;
 
@@ -44,68 +28,110 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  void changeToDescPage(BuildContext ctx) {
+    Navigator.of(ctx).push(
+      MaterialPageRoute(
+        builder: (_) {
+          return Description(
+              questions[counter]['dis'], questions[counter]['desc']);
+        },
+      ),
+    );
+  }
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  void changeTofinalPage(BuildContext ctx) {
+    Navigator.of(ctx).push(
+      MaterialPageRoute(
+        builder: (_) {
+          return Outcome();
+        },
+      ),
+    );
+  }
+
+  String initialText = "Are you suffering from ";
+  List questions = [
+    {
+      'dis': 'cough',
+      'desc': 'Expel air from the lungs with a sudden sharp sound.',
+    },
+    {
+      'dis': 'fever',
+      'desc':
+          'An abnormally high body temperature, usually accompanied by shivering, headache, and in severe instances, delirium.'
+    },
+    {'dis': 'shortness of breath', 'desc': 'Shortness of breath'},
+    {
+      'dis': 'non-productive cough',
+      'desc':
+          'A nonproductive cough, also known as a dry cough, doesn\'t produce phlegm or mucus.'
+    },
+    {
+      'dis': 'chill',
+      'desc':
+          'An unpleasant feeling of coldness in the atmosphere, one\'s surroundings, or the body.'
+    },
+    {
+      'dis': 'wheezing',
+      'desc': 'Breathing with a whistling or rattling sound in the chest.'
+    },
+    {'dis': 'night sweat', 'desc': 'Sweating in the night.'},
+  ];
+
+  String theQuestionOnScreen = 'Are you suffering from cough ?';
+  int counter = 0;
+  void changeQuestion() {
+    if (counter < questions.length) {
+      if (counter == questions.length - 1) {
+        changeTofinalPage(context);
+      } else
+        setState(() {
+          theQuestionOnScreen =
+              initialText + questions[++counter]['dis'] + ' ?';
+          print('Counter is $counter');
+        });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Container(
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 30),
+              child: Container(
+                padding: EdgeInsets.fromLTRB(30, 0, 30, 0),
+                child: Text(
+                  theQuestionOnScreen,
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                YesNoButton("Yes", changeQuestion),
+                YesNoButton("No", changeQuestion),
+              ],
             ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+        child: Icon(Icons.question_answer),
+        onPressed: () {
+          changeToDescPage(context);
+        },
+      ),
     );
   }
 }
